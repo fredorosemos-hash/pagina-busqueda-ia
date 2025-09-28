@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Carga CSV</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: #00ff41; 
+        }
+        .upload-area {
+            border: 2px dashed #00ff41;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        #fileList { margin-top: 20px; }
+        button { 
+            background: #00ff41; 
+            color: #000; 
+            border: none; 
+            padding: 10px 20px; 
+            cursor: pointer;
+        }
+        button:disabled { 
+            background: #666; 
+            cursor: not-allowed; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba de Carga CSV</h1>
+    
+    <div class="upload-area">
+        <input type="file" id="fileInput" accept=".csv" multiple>
+        <p>Selecciona archivos CSV para cargar</p>
+    </div>
+    
+    <div id="fileList"></div>
+    
+    <button id="processBtn" disabled>Procesar Datos</button>
+    
+    <div id="results" style="margin-top: 20px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+        let csvData = [];
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            console.log('Archivos seleccionados:', files.length);
+            
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            csvData = [];
+            
+            if (files.length === 0) {
+                document.getElementById('processBtn').disabled = true;
+                return;
+            }
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                console.log(`Archivo ${i + 1}:`, file);
+                console.log('- Nombre:', file.name);
+                console.log('- Tipo:', file.type);
+                console.log('- Tamaño:', file.size, 'bytes');
+                
+                // Verificar si es un archivo CSV
+                const isCSV = file.name.toLowerCase().endsWith('.csv') || 
+                             file.type === 'text/csv' || 
+                             file.type === 'application/csv' ||
+                             file.type === '';
+                
+                if (isCSV) {
+                    console.log('✓ Archivo CSV detectado, procesando...');
+                    readCSVFile(file);
+                } else {
+                    console.warn('✗ No es un archivo CSV:', file.name);
+                    const warningDiv = document.createElement('div');
+                    warningDiv.style.cssText = 'color: #ffaa44; margin: 0.5rem 0;';
+                    warningDiv.innerHTML = `⚠️ ${file.name} no es un archivo CSV válido`;
+                    fileList.appendChild(warningDiv);
+                }
+            }
+        }
+
+        function readCSVFile(file) {
+            console.log('Intentando leer archivo:', file.name);
+            
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                encoding: 'UTF-8',
+                complete: function(results) {
+                    console.log('Resultado del parsing:', results);
+                    
+                    if (results.errors.length > 0) {
+                        console.error('Errores al procesar CSV:', results.errors);
+                        
+                        const fileList = document.getElementById('fileList');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.style.cssText = 'color: #ff4444; background: rgba(255,68,68,0.1); padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;';
+                        errorDiv.innerHTML = `
+                            ❌ <strong>Error en ${file.name}:</strong><br>
+                            ${results.errors.slice(0, 3).map(err => `• ${err.message}`).join('<br>')}
+                        `;
+                        fileList.appendChild(errorDiv);
+                        
+                        if (results.data.length === 0) {
+                            return;
+                        }
+                    }
+                    
+                    if (results.data && results.data.length > 0) {
+                        console.log('Filas procesadas:', results.data.length);
+                        console.log('Primera fila de ejemplo:', results.data[0]);
+                        console.log('Columnas detectadas:', Object.keys(results.data[0]));
+                        
+                        csvData = csvData.concat(results.data);
+                        
+                        const fileList = document.getElementById('fileList');
+                        const successDiv = document.createElement('div');
+                        successDiv.style.cssText = 'color: #00ff41; background: rgba(0,255,65,0.1); padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;';
+                        successDiv.innerHTML = `
+                            ✅ <strong>${file.name} cargado exitosamente</strong><br>
+                            • ${results.data.length} filas procesadas<br>
+                            • ${Object.keys(results.data[0]).length} columnas detectadas: ${Object.keys(results.data[0]).slice(0, 3).join(', ')}${Object.keys(results.data[0]).length > 3 ? '...' : ''}
+                        `;
+                        fileList.appendChild(successDiv);
+                        
+                        document.getElementById('processBtn').disabled = false;
+                        
+                        console.log(`Total de datos CSV acumulados: ${csvData.length} registros`);
+                    } else {
+                        console.warn('No se encontraron datos en el archivo:', file.name);
+                        
+                        const fileList = document.getElementById('fileList');
+                        const warningDiv = document.createElement('div');
+                        warningDiv.style.cssText = 'color: #ffaa44; background: rgba(255,170,68,0.1); padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;';
+                        warningDiv.innerHTML = `
+                            ⚠️ <strong>${file.name}:</strong> Archivo vacío o sin datos válidos
+                        `;
+                        fileList.appendChild(warningDiv);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error al leer archivo CSV:', error);
+                    
+                    const fileList = document.getElementById('fileList');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'color: #ff4444; background: rgba(255,68,68,0.1); padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px;';
+                    errorDiv.innerHTML = `
+                        ❌ <strong>Error crítico en ${file.name}:</strong><br>
+                        ${error.message || 'Error desconocido al leer el archivo'}
+                    `;
+                    fileList.appendChild(errorDiv);
+                }
+            });
+        }
+
+        // Configurar eventos
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+
+        document.getElementById('processBtn').addEventListener('click', function() {
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <h2>Datos Cargados:</h2>
+                <p>Total de registros: ${csvData.length}</p>
+                <p>Columnas: ${csvData.length > 0 ? Object.keys(csvData[0]).join(', ') : 'Ninguna'}</p>
+                <h3>Primeros 5 registros:</h3>
+                <pre>${JSON.stringify(csvData.slice(0, 5), null, 2)}</pre>
+            `;
+        });
+    </script>
+</body>
+</html>

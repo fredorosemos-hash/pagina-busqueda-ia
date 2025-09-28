@@ -1,0 +1,73 @@
+# ===================================
+# GITIGNORE - DASHBOARD FISCALÍA
+# ===================================
+
+# Archivos del sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Archivos temporales de Windows
+*.tmp
+*.temp
+~$*
+
+# Archivos de configuración del editor
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/.ropeproject
+*.swp
+*.swo
+*~
+
+# Archivos de logs
+*.log
+logs/
+*.log.*
+
+# Directorios de dependencias (si se usan en el futuro)
+node_modules/
+bower_components/
+
+# Archivos de cache
+.cache/
+*.cache
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+
+# Archivos de configuración local
+.env
+.env.local
+.env.production
+config.local.js
+
+# Archivos de prueba temporales
+test_*
+temp_*
+*.test.html
+
+# Archivos compilados o generados
+dist/
+build/
+*.min.js
+*.min.css
+
+# Archivos de IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Archivos específicos del proyecto que no queremos versionar
+# (descomenta si necesitas excluir alguno)
+# datos_privados.csv
+# configuracion_secreta.js

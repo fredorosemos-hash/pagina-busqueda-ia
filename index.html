@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Fiscalía General de la Nación - Análisis de Datos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="matrix-background"></div>
+    
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <i class="fas fa-shield-alt"></i>
+                <div class="header-text">
+                    <h1 class="main-title">DASHBOARD FISCALÍA GENERAL DE LA NACIÓN</h1>
+                    <h2 class="sub-title">SECCIONAL MEDELLÍN</h2>
+                    <h3 class="analysis-title">ANÁLISIS DE DATOS</h3>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">SISTEMA ACTIVO</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <!-- Panel de Control -->
+        <section class="control-panel">
+            <div class="panel-header">
+                <i class="fas fa-upload"></i>
+                <h3>CARGA DE DATOS</h3>
+            </div>
+            <div class="upload-section">
+                <div class="file-input-container">
+                    <input type="file" id="csvFileInput" accept=".csv" multiple>
+                    <label for="csvFileInput" class="file-input-label">
+                        <i class="fas fa-file-csv"></i>
+                        <span>Seleccionar archivos CSV</span>
+                    </label>
+                    
+                    <!-- Botón de prueba temporal -->
+                    <button id="testLoadBtn" style="margin-top: 10px; padding: 10px; background: var(--neon-green); color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        🧪 CARGAR ARCHIVO DE PRUEBA (datos_ejemplo.csv)
+                    </button>
+                </div>
+                <div class="file-list" id="fileList"></div>
+                <button id="processBtn" class="process-btn" disabled>
+                    <i class="fas fa-brain"></i>
+                    PROCESAR CON IA
+                </button>
+                <button id="generateReportBtn" class="report-btn" disabled>
+                    <i class="fas fa-file-alt"></i>
+                    GENERAR INFORME COMPLETO
+                </button>
+            </div>
+        </section>
+
+        <!-- Panel de Estadísticas -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>TOTAL DELITOS</h4>
+                    <span class="stat-number" id="totalDelitos">0</span>
+                    <span class="stat-change" id="changeDelitos">+0%</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>CIUDADES AFECTADAS</h4>
+                    <span class="stat-number" id="totalCiudades">0</span>
+                    <span class="stat-change" id="changeCiudades">+0%</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>CONDUCTA MÁS FRECUENTE</h4>
+                    <span class="stat-text" id="conductaFrecuente">-</span>
+                    <span class="stat-change" id="changeConducta">-</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trending-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>INCREMENTO PROMEDIO</h4>
+                    <span class="stat-number" id="incrementoPromedio">0%</span>
+                    <span class="stat-change" id="changeIncremento">-</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gráficos de Análisis -->
+        <section class="charts-section">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>EVOLUCIÓN TEMPORAL DE DELITOS</h3>
+                </div>
+                <canvas id="timeChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>DISTRIBUCIÓN POR TIPO DE DELITO</h3>
+                </div>
+                <canvas id="crimeTypeChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>IMPACTO POR CIUDADES</h3>
+                </div>
+                <canvas id="cityChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>ANÁLISIS DE INCREMENTOS</h3>
+                </div>
+                <canvas id="incrementChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Panel de Alertas IA -->
+        <section class="ai-insights">
+            <div class="panel-header">
+                <i class="fas fa-robot"></i>
+                <h3>INSIGHTS DE INTELIGENCIA ARTIFICIAL</h3>
+            </div>
+            <div class="insights-container" id="insightsContainer">
+                <div class="insight-placeholder">
+                    <i class="fas fa-brain"></i>
+                    <p>Los insights de IA se mostrarán después de procesar los datos...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>PROCESANDO CON IA...</h3>
+            <p>Analizando patrones delictivos y generando estadísticas</p>
+        </div>
+    </div>
+
+    <!-- Report Generation overlay -->
+    <div class="loading-overlay" id="reportLoadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner report-spinner"></div>
+            <h3>GENERANDO INFORME COMPLETO...</h3>
+            <p>La IA está redactando un análisis profesional de 30+ páginas</p>
+            <div class="report-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="reportProgress"></div>
+                </div>
+                <p id="reportProgressText">Iniciando análisis...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="report-modal" id="reportModal">
+        <div class="report-modal-content">
+            <div class="report-modal-header">
+                <h2><i class="fas fa-file-alt"></i> INFORME GENERADO POR IA</h2>
+                <div class="report-actions">
+                    <button id="downloadPdfBtn" class="action-btn">
+                        <i class="fas fa-download"></i> DESCARGAR WORD
+                    </button>
+                    <button id="printReportBtn" class="action-btn">
+                        <i class="fas fa-print"></i> IMPRIMIR
+                    </button>
+                    <button id="closeReportBtn" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="report-content" id="reportContent">
+                <!-- El informe generado aparecerá aquí -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Fiscalía General de la Nación - Seccional Medellín | Sistema de Análisis Inteligente</p>
+            <p>Versión 1.0 | Estado: <span class="status-active">OPERACIONAL</span></p>
+        </div>
+    </footer>
+
+    <script src="word-export.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+delito,ciudad,fecha,cantidad,departamento
+Hurto a personas,Medellín,2024-01-15,25,Antioquia
+Homicidio,Bello,2024-01-15,3,Antioquia
+Extorsión,Itagüí,2024-01-15,8,Antioquia
+Hurto a residencias,Envigado,2024-01-15,12,Antioquia
+Lesiones personales,Sabaneta,2024-01-15,15,Antioquia
+Hurto a personas,Medellín,2024-02-15,28,Antioquia
+Homicidio,Bello,2024-02-15,4,Antioquia
+Extorsión,Itagüí,2024-02-15,12,Antioquia
+Hurto a residencias,Envigado,2024-02-15,10,Antioquia
+Lesiones personales,Sabaneta,2024-02-15,18,Antioquia
+Violencia intrafamiliar,Medellín,2024-02-15,22,Antioquia
+Hurto a comercio,Bello,2024-02-15,9,Antioquia
+Hurto a personas,Medellín,2024-03-15,35,Antioquia
+Homicidio,Bello,2024-03-15,2,Antioquia
+Extorsión,Itagüí,2024-03-15,15,Antioquia
+Hurto a residencias,Envigado,2024-03-15,14,Antioquia
+Lesiones personales,Sabaneta,2024-03-15,20,Antioquia
+Violencia intrafamiliar,Medellín,2024-03-15,25,Antioquia
+Hurto a comercio,Bello,2024-03-15,11,Antioquia
+Estafa,Medellín,2024-03-15,18,Antioquia
+Hurto a personas,Medellín,2024-04-15,42,Antioquia
+Homicidio,Bello,2024-04-15,5,Antioquia
+Extorsión,Itagüí,2024-04-15,18,Antioquia
+Hurto a residencias,Envigado,2024-04-15,16,Antioquia
+Lesiones personales,Sabaneta,2024-04-15,22,Antioquia
+Violencia intrafamiliar,Medellín,2024-04-15,28,Antioquia
+Hurto a comercio,Bello,2024-04-15,13,Antioquia
+Estafa,Medellín,2024-04-15,24,Antioquia
+Hurto a vehículos,Copacabana,2024-04-15,7,Antioquia
+Secuestro,La Estrella,2024-04-15,1,Antioquia
+Hurto a personas,Medellín,2024-05-15,38,Antioquia
+Homicidio,Bello,2024-05-15,3,Antioquia
+Extorsión,Itagüí,2024-05-15,20,Antioquia
+Hurto a residencias,Envigado,2024-05-15,18,Antioquia
+Lesiones personales,Sabaneta,2024-05-15,25,Antioquia
+Violencia intrafamiliar,Medellín,2024-05-15,30,Antioquia
+Hurto a comercio,Bello,2024-05-15,15,Antioquia
+Estafa,Medellín,2024-05-15,28,Antioquia
+Hurto a vehículos,Copacabana,2024-05-15,9,Antioquia
+Tráfico de drogas,Girardota,2024-05-15,4,Antioquia
+Hurto a personas,Medellín,2024-06-15,45,Antioquia
+Homicidio,Bello,2024-06-15,6,Antioquia
+Extorsión,Itagüí,2024-06-15,22,Antioquia
+Hurto a residencias,Envigado,2024-06-15,20,Antioquia
+Lesiones personales,Sabaneta,2024-06-15,28,Antioquia
+Violencia intrafamiliar,Medellín,2024-06-15,35,Antioquia
+Hurto a comercio,Bello,2024-06-15,17,Antioquia
+Estafa,Medellín,2024-06-15,32,Antioquia
+Hurto a vehículos,Copacabana,2024-06-15,11,Antioquia
+Tráfico de drogas,Girardota,2024-06-15,6,Antioquia
+Hurto a motocicletas,Caldas,2024-06-15,8,Antioquia
+Amenazas,Barbosa,2024-06-15,12,Antioquia
+Hurto a personas,Medellín,2024-07-15,52,Antioquia
+Homicidio,Bello,2024-07-15,4,Antioquia
+Extorsión,Itagüí,2024-07-15,25,Antioquia
+Hurto a residencias,Envigado,2024-07-15,22,Antioquia
+Lesiones personales,Sabaneta,2024-07-15,30,Antioquia
+Violencia intrafamiliar,Medellín,2024-07-15,38,Antioquia
+Hurto a comercio,Bello,2024-07-15,19,Antioquia
+Estafa,Medellín,2024-07-15,35,Antioquia
+Hurto a vehículos,Copacabana,2024-07-15,13,Antioquia
+Tráfico de drogas,Girardota,2024-07-15,8,Antioquia
+Hurto a motocicletas,Caldas,2024-07-15,10,Antioquia
+Amenazas,Barbosa,2024-07-15,15,Antioquia
+Acceso carnal violento,Medellín,2024-07-15,5,Antioquia
+Hurto a entidades financieras,Rionegro,2024-07-15,2,Antioquia
+Hurto a personas,Medellín,2024-08-15,48,Antioquia
+Homicidio,Bello,2024-08-15,7,Antioquia
+Extorsión,Itagüí,2024-08-15,28,Antioquia
+Hurto a residencias,Envigado,2024-08-15,25,Antioquia
+Lesiones personales,Sabaneta,2024-08-15,33,Antioquia
+Violencia intrafamiliar,Medellín,2024-08-15,42,Antioquia
+Hurto a comercio,Bello,2024-08-15,21,Antioquia
+Estafa,Medellín,2024-08-15,38,Antioquia
+Hurto a vehículos,Copacabana,2024-08-15,15,Antioquia
+Tráfico de drogas,Girardota,2024-08-15,10,Antioquia
+Hurto a motocicletas,Caldas,2024-08-15,12,Antioquia
+Amenazas,Barbosa,2024-08-15,18,Antioquia
+Acceso carnal violento,Medellín,2024-08-15,7,Antioquia
+Terrorismo,Medellín,2024-08-15,1,Antioquia
+Hurto a personas,Medellín,2024-09-15,55,Antioquia
+Homicidio,Bello,2024-09-15,8,Antioquia
+Extorsión,Itagüí,2024-09-15,30,Antioquia
+Hurto a residencias,Envigado,2024-09-15,28,Antioquia
+Lesiones personales,Sabaneta,2024-09-15,35,Antioquia
+Violencia intrafamiliar,Medellín,2024-09-15,45,Antioquia
+Hurto a comercio,Bello,2024-09-15,23,Antioquia
+Estafa,Medellín,2024-09-15,42,Antioquia
+Hurto a vehículos,Copacabana,2024-09-15,17,Antioquia
+Tráfico de drogas,Girardota,2024-09-15,12,Antioquia
+Hurto a motocicletas,Caldas,2024-09-15,14,Antioquia
+Amenazas,Barbosa,2024-09-15,20,Antioquia
+Acceso carnal violento,Medellín,2024-09-15,9,Antioquia
+Corrupción,Medellín,2024-09-15,3,Antioquia
+Lavado de activos,Rionegro,2024-09-15,2,Antioquia
