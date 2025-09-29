@@ -35,6 +35,14 @@ logs/
 node_modules/
 bower_components/
 
+# Entornos virtuales de Python
+fiscalia_env/
+venv/
+env/
+ENV/
+.venv/
+.env/
+
 # Archivos de cache
 .cache/
 *.cache
