@@ -1597,49 +1597,49 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                 st.plotly_chart(fig_yoy, use_container_width=True)
         
         with tab4:
-            # Obtener valores seguros para mostrar
-            most_affected = str(analysis.get('most_affected_city', 'zonas críticas')).replace('<', '&lt;').replace('>', '&gt;')
-            highest_rate = str(analysis.get('highest_crime_rate_city', 'áreas de alta incidencia')).replace('<', '&lt;').replace('>', '&gt;')
-            high_diversity = str(analysis.get('high_diversity_city', 'zonas complejas')).replace('<', '&lt;').replace('>', '&gt;')
-            most_frequent = str(analysis.get('most_frequent_crime', 'delitos principales')).replace('<', '&lt;').replace('>', '&gt;')
-            highest_avg = str(analysis.get('highest_avg_crime', 'delitos de alto impacto')).replace('<', '&lt;').replace('>', '&gt;')
-            dangerous_day = str(analysis.get('most_dangerous_day', 'críticos')).replace('<', '&lt;').replace('>', '&gt;')
-            trend_dir = str(analysis.get('trend_direction', 'actual')).replace('<', '&lt;').replace('>', '&gt;')
-            seasonal = str(analysis.get('seasonal_pattern', 'patrones identificados')).replace('<', '&lt;').replace('>', '&gt;')
-            
-            st.markdown(f"""
-            <div class="success-message">
-                <h3>🧭 RECOMENDACIONES ESTRATÉGICAS</h3>
-                
-                <h4>🎯 FOCALIZACIÓN GEOGRÁFICA</h4>
-                <ul>
-                    <li>Intensificar patrullajes en <strong>{most_affected}</strong></li>
-                    <li>Implementar estrategias específicas en <strong>{highest_rate}</strong></li>
-                    <li>Crear unidad especializada para <strong>{high_diversity}</strong></li>
-                </ul>
-                
-                <h4>🚨 ESPECIALIZACIÓN POR DELITO</h4>
-                <ul>
-                    <li>Crear grupo élite contra <strong>{most_frequent}</strong></li>
-                    <li>Protocolo especial para <strong>{highest_avg}</strong></li>
-                    <li>Capacitación específica del personal en tendencias emergentes</li>
-                </ul>
-                
-                <h4>⏰ ESTRATEGIA TEMPORAL</h4>
-                <ul>
-                    <li>Reforzar operativos los días <strong>{dangerous_day}</strong></li>
-                    <li>Monitoreo especial considerando tendencia <strong>{trend_dir}</strong></li>
-                    <li>Implementar alertas basadas en <strong>{seasonal}</strong></li>
-                </ul>
-                
-                <h4>🤖 INTELIGENCIA ARTIFICIAL</h4>
-                <ul>
-                    <li>Implementar análisis predictivo para anticipar patrones</li>
-                    <li>Sistema de alerta temprana en zonas de alta criminalidad</li>
-                    <li>Dashboard en tiempo real para toma de decisiones</li>
-                </ul>
+            st.markdown("""
+            <div class="success-message" style="
+                background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(0,255,255,0.05));
+                border: 2px solid #00ffff;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 8px 32px rgba(0,255,255,0.2);
+                backdrop-filter: blur(10px);
+                margin: 10px 0;
+            ">
+                <h3 style="color: #00ffff; margin: 0 0 25px 0; font-family: 'Orbitron', monospace;">🧭 RECOMENDACIONES ESTRATÉGICAS</h3>
             </div>
             """, unsafe_allow_html=True)
+            
+            # 🎯 FOCALIZACIÓN GEOGRÁFICA
+            st.markdown("#### 🎯 FOCALIZACIÓN GEOGRÁFICA")
+            st.write(f"• **Intensificar patrullajes** en {analysis.get('most_affected_city', 'zonas críticas')}")
+            st.write(f"• **Implementar estrategias específicas** en {analysis.get('highest_crime_rate_city', 'áreas de alta incidencia')}")
+            st.write(f"• **Crear unidad especializada** para {analysis.get('high_diversity_city', 'zonas complejas')}")
+            
+            st.markdown("---")
+            
+            # 🚨 ESPECIALIZACIÓN POR DELITO
+            st.markdown("#### 🚨 ESPECIALIZACIÓN POR DELITO")
+            st.write(f"• **Crear grupo élite** contra {analysis.get('most_frequent_crime', 'delitos principales')}")
+            st.write(f"• **Protocolo especial** para {analysis.get('highest_avg_crime', 'delitos de alto impacto')}")
+            st.write("• **Capacitación específica** del personal en tendencias emergentes")
+            
+            st.markdown("---")
+            
+            # ⏰ ESTRATEGIA TEMPORAL
+            st.markdown("#### ⏰ ESTRATEGIA TEMPORAL")
+            st.write(f"• **Reforzar operativos** los días {analysis.get('most_dangerous_day', 'críticos')}")
+            st.write(f"• **Monitoreo especial** considerando tendencia {analysis.get('trend_direction', 'actual')}")
+            st.write(f"• **Implementar alertas** basadas en {analysis.get('seasonal_pattern', 'patrones identificados')}")
+            
+            st.markdown("---")
+            
+            # 🤖 INTELIGENCIA ARTIFICIAL
+            st.markdown("#### 🤖 INTELIGENCIA ARTIFICIAL")
+            st.write("• **Implementar análisis predictivo** para anticipar patrones")
+            st.write("• **Sistema de alerta temprana** en zonas de alta criminalidad")
+            st.write("• **Dashboard en tiempo real** para toma de decisiones")
         
         # Tabla de datos
         st.markdown("## 📋 TABLA DE DATOS")
