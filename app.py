@@ -1460,6 +1460,15 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
             col1, col2 = st.columns(2)
             
             with col1:
+                # Sanitizar variables para HTML
+                most_frequent = str(analysis.get('most_frequent_crime', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')
+                highest_avg = str(analysis.get('highest_avg_crime', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')
+                total_crimes = analysis.get('total_crimes', 0)
+                most_affected = str(analysis.get('most_affected_city', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')
+                highest_rate = str(analysis.get('highest_crime_rate_city', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')
+                high_diversity = str(analysis.get('high_diversity_city', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')
+                max_diversity = analysis.get('max_diversity', 0)
+                
                 st.markdown(f"""
                 <div style="
                     background: linear-gradient(135deg, rgba(255,0,128,0.1), rgba(255,0,128,0.05));
@@ -1472,9 +1481,9 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                 ">
                     <h4 style="color: #ff0080; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">🚨 DELITOS PRINCIPALES</h4>
                     <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
-                        <li><strong>Más frecuente:</strong> {analysis.get('most_frequent_crime', 'N/A')}</li>
-                        <li><strong>Mayor promedio:</strong> {analysis.get('highest_avg_crime', 'N/A')}</li>
-                        <li><strong>Tipos únicos:</strong> {analysis.get('total_crimes', 0)} diferentes</li>
+                        <li><strong>Más frecuente:</strong> {most_frequent}</li>
+                        <li><strong>Mayor promedio:</strong> {highest_avg}</li>
+                        <li><strong>Tipos únicos:</strong> {total_crimes} diferentes</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1491,9 +1500,9 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                 ">
                     <h4 style="color: #00ff41; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">🏙️ ANÁLISIS TERRITORIAL</h4>
                     <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
-                        <li><strong>Ciudad más afectada:</strong> {analysis.get('most_affected_city', 'N/A')}</li>
-                        <li><strong>Mayor tasa promedio:</strong> {analysis.get('highest_crime_rate_city', 'N/A')}</li>
-                        <li><strong>Mayor diversidad:</strong> {analysis.get('high_diversity_city', 'N/A')} ({analysis.get('max_diversity', 0)} tipos)</li>
+                        <li><strong>Ciudad más afectada:</strong> {most_affected}</li>
+                        <li><strong>Mayor tasa promedio:</strong> {highest_rate}</li>
+                        <li><strong>Mayor diversidad:</strong> {high_diversity} ({max_diversity} tipos)</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1511,9 +1520,9 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                 ">
                     <h4 style="color: #00ffff; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">� PATRONES TEMPORALES</h4>
                     <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
-                        <li><strong>Tendencia:</strong> {analysis.get('trend_direction', 'N/A')} ({analysis.get('trend_percentage', 0)}%)</li>
-                        <li><strong>Día más peligroso:</strong> {analysis.get('most_dangerous_day', 'N/A')}</li>
-                        <li><strong>Patrón estacional:</strong> {analysis.get('seasonal_pattern', 'N/A')}</li>
+                        <li><strong>Tendencia:</strong> {str(analysis.get('trend_direction', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')} ({analysis.get('trend_percentage', 0)}%)</li>
+                        <li><strong>Día más peligroso:</strong> {str(analysis.get('most_dangerous_day', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')}</li>
+                        <li><strong>Patrón estacional:</strong> {str(analysis.get('seasonal_pattern', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')}</li>
                     </ul>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1530,7 +1539,7 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                 ">
                     <h4 style="color: #ff8000; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">� MÉTRICAS CLAVE</h4>
                     <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
-                        <li><strong>Correlación:</strong> {analysis.get('correlation_insight', 'N/A')}</li>
+                        <li><strong>Correlación:</strong> {str(analysis.get('correlation_insight', 'N/A')).replace('<', '&lt;').replace('>', '&gt;')}</li>
                         <li><strong>Total casos:</strong> {analysis.get('total_cases', 0):,}</li>
                         <li><strong>Registros:</strong> {analysis.get('total_records', 0):,}</li>
                     </ul>
@@ -1588,29 +1597,39 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                 st.plotly_chart(fig_yoy, use_container_width=True)
         
         with tab4:
+            # Obtener valores seguros para mostrar
+            most_affected = str(analysis.get('most_affected_city', 'zonas críticas')).replace('<', '&lt;').replace('>', '&gt;')
+            highest_rate = str(analysis.get('highest_crime_rate_city', 'áreas de alta incidencia')).replace('<', '&lt;').replace('>', '&gt;')
+            high_diversity = str(analysis.get('high_diversity_city', 'zonas complejas')).replace('<', '&lt;').replace('>', '&gt;')
+            most_frequent = str(analysis.get('most_frequent_crime', 'delitos principales')).replace('<', '&lt;').replace('>', '&gt;')
+            highest_avg = str(analysis.get('highest_avg_crime', 'delitos de alto impacto')).replace('<', '&lt;').replace('>', '&gt;')
+            dangerous_day = str(analysis.get('most_dangerous_day', 'críticos')).replace('<', '&lt;').replace('>', '&gt;')
+            trend_dir = str(analysis.get('trend_direction', 'actual')).replace('<', '&lt;').replace('>', '&gt;')
+            seasonal = str(analysis.get('seasonal_pattern', 'patrones identificados')).replace('<', '&lt;').replace('>', '&gt;')
+            
             st.markdown(f"""
             <div class="success-message">
                 <h3>🧭 RECOMENDACIONES ESTRATÉGICAS</h3>
                 
                 <h4>🎯 FOCALIZACIÓN GEOGRÁFICA</h4>
                 <ul>
-                    <li>Intensificar patrullajes en <strong>{analysis.get('most_affected_city', 'zonas críticas')}</strong></li>
-                    <li>Implementar estrategias específicas en <strong>{analysis.get('highest_crime_rate_city', 'áreas de alta incidencia')}</strong></li>
-                    <li>Crear unidad especializada para <strong>{analysis.get('high_diversity_city', 'zonas complejas')}</strong></li>
+                    <li>Intensificar patrullajes en <strong>{most_affected}</strong></li>
+                    <li>Implementar estrategias específicas en <strong>{highest_rate}</strong></li>
+                    <li>Crear unidad especializada para <strong>{high_diversity}</strong></li>
                 </ul>
                 
                 <h4>🚨 ESPECIALIZACIÓN POR DELITO</h4>
                 <ul>
-                    <li>Crear grupo élite contra <strong>{analysis.get('most_frequent_crime', 'delitos principales')}</strong></li>
-                    <li>Protocolo especial para <strong>{analysis.get('highest_avg_crime', 'delitos de alto impacto')}</strong></li>
+                    <li>Crear grupo élite contra <strong>{most_frequent}</strong></li>
+                    <li>Protocolo especial para <strong>{highest_avg}</strong></li>
                     <li>Capacitación específica del personal en tendencias emergentes</li>
                 </ul>
                 
                 <h4>⏰ ESTRATEGIA TEMPORAL</h4>
                 <ul>
-                    <li>Reforzar operativos los días <strong>{analysis.get('most_dangerous_day', 'críticos')}</strong></li>
-                    <li>Monitoreo especial considerando tendencia <strong>{analysis.get('trend_direction', 'actual')}</strong></li>
-                    <li>Implementar alertas basadas en <strong>{analysis.get('seasonal_pattern', 'patrones identificados')}</strong></li>
+                    <li>Reforzar operativos los días <strong>{dangerous_day}</strong></li>
+                    <li>Monitoreo especial considerando tendencia <strong>{trend_dir}</strong></li>
+                    <li>Implementar alertas basadas en <strong>{seasonal}</strong></li>
                 </ul>
                 
                 <h4>🤖 INTELIGENCIA ARTIFICIAL</h4>
