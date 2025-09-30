@@ -1130,7 +1130,7 @@ def main():
         df = pd.DataFrame()
         
         # Mostrar información de ayuda
-        with st.expander("❓ ¿Qué formato debe tener mi archivo CSV?"):
+        with st.expander("❓ Formato del archivo CSV", expanded=True):
             st.markdown("""
             **📋 Columnas requeridas:**
             - `delito`: Tipo de delito (texto)
