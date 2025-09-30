@@ -195,7 +195,23 @@ Hurto a vehículos,Bello,2024-04-15,6,Antioquia`;
                 console.log('✅ Datos de prueba embebidos procesados:', results);
                 
                 if (results.data && results.data.length > 0) {
-                    csvData = results.data;
+                    // Validación y limpieza según reglas
+                    const validation = validateCsvStructure(results.data);
+                    if (!validation.ok) {
+                        fileList.innerHTML = `
+                            <div style="color: #ff4444; background: rgba(255,68,68,0.1); padding: 1rem; border-radius: 8px; border: 2px solid #ff4444;">
+                                <h4 style="margin-bottom: 0.5rem;">❌ Estructura inválida del CSV</h4>
+                                <p>Faltan columnas requeridas: <strong>${validation.missing.join(', ')}</strong></p>
+                                <p style="margin-top: 0.5rem;">Columnas encontradas: ${validation.found.join(', ')}</p>
+                                <p style="margin-top: 0.5rem; font-style: italic;">Formato esperado: delito/ó conducta, ciudad, fecha, cantidad, departamento</p>
+                            </div>
+                        `;
+                        processBtn.disabled = true;
+                        return;
+                    }
+
+                    const { cleaned, removed } = applyCleaningRules(results.data);
+                    csvData = cleaned;
                     
                     fileList.innerHTML = `
                         <div style="color: #00ff41; background: rgba(0,255,65,0.1); padding: 1.5rem; border-radius: 10px; border: 2px solid #00ff41; margin: 1rem 0;">
@@ -209,8 +225,8 @@ Hurto a vehículos,Bello,2024-04-15,6,Antioquia`;
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
                                 <div style="background: rgba(0,255,65,0.1); padding: 0.8rem; border-radius: 8px; border: 1px solid #00ff41;">
-                                    <strong style="color: #00ff41;">📊 Registros:</strong><br>
-                                    <span style="font-size: 1.2rem; font-weight: bold;">${results.data.length}</span>
+                                    <strong style="color: #00ff41;">📊 Registros válidos:</strong><br>
+                                    <span style="font-size: 1.2rem; font-weight: bold;">${csvData.length}</span>
                                 </div>
                                 <div style="background: rgba(0,255,65,0.1); padding: 0.8rem; border-radius: 8px; border: 1px solid #00ff41;">
                                     <strong style="color: #00ff41;">📋 Columnas:</strong><br>
@@ -218,27 +234,28 @@ Hurto a vehículos,Bello,2024-04-15,6,Antioquia`;
                                 </div>
                                 <div style="background: rgba(0,255,65,0.1); padding: 0.8rem; border-radius: 8px; border: 1px solid #00ff41;">
                                     <strong style="color: #00ff41;">🏙️ Ciudades:</strong><br>
-                                    <span style="font-size: 1.2rem; font-weight: bold;">${[...new Set(results.data.map(row => row.ciudad))].length}</span>
+                                    <span style="font-size: 1.2rem; font-weight: bold;">${[...new Set(csvData.map(row => row.ciudad || row.municipio))].length}</span>
                                 </div>
                                 <div style="background: rgba(0,255,65,0.1); padding: 0.8rem; border-radius: 8px; border: 1px solid #00ff41;">
                                     <strong style="color: #00ff41;">🚨 Delitos:</strong><br>
-                                    <span style="font-size: 1.2rem; font-weight: bold;">${[...new Set(results.data.map(row => row.delito))].length}</span>
+                                    <span style="font-size: 1.2rem; font-weight: bold;">${[...new Set(csvData.map(row => row.delito || row.conducta))].length}</span>
                                 </div>
                             </div>
+                            ${removed > 0 ? `<div style="margin-top: 0.5rem; color: #ffaa44;">🧹 Se eliminaron ${removed} registros inválidos durante la limpieza</div>` : ''}
                             
                             <details style="margin-top: 1rem;">
                                 <summary style="cursor: pointer; color: #00ff41; font-weight: bold;">🔍 Ver detalles de los datos</summary>
                                 <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.3); border-radius: 5px;">
                                     <p><strong>Columnas:</strong> ${Object.keys(results.data[0]).join(', ')}</p>
-                                    <p><strong>Ciudades:</strong> ${[...new Set(results.data.map(row => row.ciudad))].join(', ')}</p>
-                                    <p><strong>Primer registro:</strong></p>
-                                    <pre style="font-size: 0.9em; background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 3px; overflow-x: auto;">${JSON.stringify(results.data[0], null, 2)}</pre>
+                                    <p><strong>Ciudades:</strong> ${[...new Set(csvData.map(row => row.ciudad))].join(', ')}</p>
+                                    <p><strong>Primer registro válido:</strong></p>
+                                    <pre style="font-size: 0.9em; background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 3px; overflow-x: auto;">${JSON.stringify(csvData[0], null, 2)}</pre>
                                 </div>
                             </details>
                         </div>
                     `;
                     
-                    processBtn.disabled = false;
+                    processBtn.disabled = csvData.length === 0;
                     processBtn.style.background = '#00ff41';
                     processBtn.style.color = '#000';
                     processBtn.style.fontWeight = 'bold';
@@ -410,7 +427,24 @@ function readCSVFile(file, fileIndex = 0) {
                 
                 console.log(`Filas válidas después de filtrado: ${validData.length}`);
                 
-                csvData = csvData.concat(validData);
+                // Validar estructura mínima
+                const validation = validateCsvStructure(validData);
+                if (!validation.ok) {
+                    const fileList = document.getElementById('fileList');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'color: #ff4444; background: rgba(255,68,68,0.1); padding: 0.5rem; margin: 0.5rem 0; border-radius: 4px; font-size: 0.9rem;';
+                    errorDiv.innerHTML = `
+                        <i class="fas fa-times-circle"></i>
+                        <strong>Estructura no válida en ${file.name}:</strong><br>
+                        Faltan columnas requeridas: <em>${validation.missing.join(', ')}</em><br>
+                        Columnas encontradas: ${validation.found.join(', ')}
+                    `;
+                    fileList.appendChild(errorDiv);
+                    return;
+                }
+
+                const { cleaned, removed } = applyCleaningRules(validData);
+                csvData = csvData.concat(cleaned);
                 
                 if (statusElement) {
                     statusElement.innerHTML = `✅ ${validData.length} filas`;
@@ -430,11 +464,21 @@ function readCSVFile(file, fileIndex = 0) {
                 summaryDiv.innerHTML = `
                     <i class="fas fa-check-circle"></i>
                     <strong>Datos cargados exitosamente:</strong><br>
-                    • ${validData.length} registros de ${file.name}<br>
+                    • ${cleaned.length} registros válidos de ${file.name}<br>
                     • Columnas: ${Object.keys(results.data[0]).join(', ')}<br>
                     • Total acumulado: ${csvData.length} registros
                 `;
                 fileList.appendChild(summaryDiv);
+
+                if (removed > 0) {
+                    const infoDiv = document.createElement('div');
+                    infoDiv.style.cssText = 'color: #ffaa44; background: rgba(255,170,68,0.1); padding: 0.5rem; margin: 0.3rem 0; border-radius: 4px; font-size: 0.85rem;';
+                    infoDiv.innerHTML = `
+                        <i class="fas fa-broom"></i>
+                        Se eliminaron ${removed} registros inválidos durante la limpieza.
+                    `;
+                    fileList.appendChild(infoDiv);
+                }
                 
             } else {
                 console.warn('❌ No se encontraron datos válidos');
@@ -527,12 +571,15 @@ function cleanAndNormalizeData(data) {
             // Mapear campos comunes
             if (lowerKey.includes('delito') || lowerKey.includes('conducta') || lowerKey.includes('tipo')) {
                 normalizedRow.conducta = row[key]?.toString().trim();
+                // Mantener también el alias 'delito' para compatibilidad
+                normalizedRow.delito = normalizedRow.conducta;
             } else if (lowerKey.includes('ciudad') || lowerKey.includes('municipio') || lowerKey.includes('lugar')) {
                 normalizedRow.ciudad = row[key]?.toString().trim();
             } else if (lowerKey.includes('fecha') || lowerKey.includes('date')) {
                 normalizedRow.fecha = parseDate(row[key]);
             } else if (lowerKey.includes('cantidad') || lowerKey.includes('numero') || lowerKey.includes('casos')) {
-                normalizedRow.cantidad = parseInt(row[key]) || 1;
+                const num = typeof row[key] === 'number' ? row[key] : parseFloat(row[key]);
+                normalizedRow.cantidad = Number.isFinite(num) && num > 0 ? num : 0;
             } else if (lowerKey.includes('departamento') || lowerKey.includes('region')) {
                 normalizedRow.departamento = row[key]?.toString().trim();
             } else {
@@ -541,11 +588,77 @@ function cleanAndNormalizeData(data) {
         });
         
         // Valores por defecto
-        if (!normalizedRow.cantidad) normalizedRow.cantidad = 1;
-        if (!normalizedRow.fecha) normalizedRow.fecha = new Date();
+        if (!normalizedRow.cantidad || normalizedRow.cantidad <= 0) normalizedRow.cantidad = 1;
+        if (!normalizedRow.fecha || isNaN(normalizedRow.fecha)) normalizedRow.fecha = new Date();
         
         return normalizedRow;
-    }).filter(row => row.conducta && row.ciudad); // Filtrar filas inválidas
+    }).filter(row => row.conducta && row.ciudad && row.cantidad > 0); // Filtrar filas inválidas
+}
+
+// ==========================
+// Validación y limpieza CSV
+// ==========================
+function detectColumns(rows) {
+    const cols = new Set();
+    rows.slice(0, 3).forEach(r => Object.keys(r).forEach(k => cols.add(k)));
+    return Array.from(cols);
+}
+
+function validateCsvStructure(rows) {
+    const found = detectColumns(rows).map(c => c.toString());
+    const hasDelito = found.some(c => c.toLowerCase().includes('delito') || c.toLowerCase().includes('conducta') || c.toLowerCase().includes('tipo'));
+    const hasCiudad = found.some(c => c.toLowerCase().includes('ciudad') || c.toLowerCase().includes('municipio'));
+    const hasFecha = found.some(c => c.toLowerCase().includes('fecha') || c.toLowerCase().includes('date'));
+    const hasCantidad = found.some(c => c.toLowerCase().includes('cantidad') || c.toLowerCase().includes('numero') || c.toLowerCase().includes('casos'));
+    const hasDepartamento = found.some(c => c.toLowerCase().includes('departamento') || c.toLowerCase().includes('region'));
+
+    const missing = [];
+    if (!hasDelito) missing.push('delito/ó conducta');
+    if (!hasCiudad) missing.push('ciudad');
+    if (!hasFecha) missing.push('fecha');
+    if (!hasCantidad) missing.push('cantidad');
+    if (!hasDepartamento) missing.push('departamento');
+
+    return { ok: missing.length === 0, missing, found };
+}
+
+function applyCleaningRules(rows) {
+    let removed = 0;
+    const cleaned = rows.map(orig => {
+        const row = { ...orig };
+        // Establecer alias delito/conducta
+        if (!row.delito && row.conducta) row.delito = row.conducta;
+        if (!row.conducta && row.delito) row.conducta = row.delito;
+
+        // Trim de textos
+        ['delito','conducta','ciudad','departamento'].forEach(k => {
+            if (row[k] !== undefined && row[k] !== null) {
+                row[k] = row[k].toString().trim();
+            }
+        });
+
+        // Fecha a objeto Date válido
+        if (row.fecha === undefined || row.fecha === null || row.fecha === '') {
+            row.fecha = null;
+        } else if (!(row.fecha instanceof Date)) {
+            row.fecha = parseDate(row.fecha);
+        }
+
+        // Cantidad numérica positiva
+        let cantidad = row.cantidad;
+        if (typeof cantidad !== 'number') {
+            cantidad = parseFloat(cantidad);
+        }
+        row.cantidad = Number.isFinite(cantidad) ? cantidad : NaN;
+
+        return row;
+    }).filter(r => {
+        const valid = r.conducta && r.ciudad && r.departamento && r.fecha instanceof Date && !isNaN(r.fecha) && Number.isFinite(r.cantidad) && r.cantidad > 0;
+        if (!valid) removed++;
+        return valid;
+    });
+
+    return { cleaned, removed };
 }
 
 function parseDate(dateString) {
@@ -771,6 +884,19 @@ function generateAIInsights(data) {
                 recomendacion: 'Establecer centros de comando especializados y aumentar la presencia institucional en estas zonas.'
             });
         }
+    }
+    
+    // Insight aproximado de Year-over-Year usando incrementos promedio
+    if (data.incrementos && typeof data.incrementos.promedio === 'number') {
+        const prom = data.incrementos.promedio;
+        const dir = prom > 0 ? 'creciente' : (prom < 0 ? 'decreciente' : 'estable');
+        insights.push({
+            tipo: 'tendencia_yoy',
+            titulo: 'Tendencia Year-over-Year Aproximada',
+            texto: `El promedio de incrementos sugiere una tendencia ${dir} cercana a ${prom.toFixed(1)}%. Se recomienda contrastar con series anuales para los últimos 5 años.`,
+            prioridad: Math.abs(prom) > 10 ? 'high' : 'medium',
+            recomendacion: 'Integrar datos históricos de los últimos cinco años para robustecer el análisis YOY.'
+        });
     }
     
     return insights;
@@ -2080,9 +2206,6 @@ async function downloadReportAsPDF() {
         downloadBtn.disabled = false;
     }
 }
-    }
-}
-
 async function generateTextBasedPDF() {
     console.log('Generando PDF basado en texto...');
     
