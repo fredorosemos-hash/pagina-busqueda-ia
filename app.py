@@ -11,6 +11,11 @@ import os
 from pathlib import Path
 import textwrap
 import streamlit.components.v1 as components
+import warnings
+
+# Suprimir warnings específicos de Plotly
+warnings.filterwarnings("ignore", message=".*keyword arguments have been deprecated.*")
+warnings.filterwarnings("ignore", message=".*behavior of DatetimeProperties.to_pydatetime.*")
 
 # ===================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -1427,12 +1432,12 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
             # Layout en grid 2x2 mejorado
             col1, col2 = st.columns(2, gap="large")
             with col1:
-                st.plotly_chart(fig1, width='stretch', key="chart1")
-                st.plotly_chart(fig3, width='stretch', key="chart3")
+                st.plotly_chart(fig1, use_container_width=True, key="chart1")
+                st.plotly_chart(fig3, use_container_width=True, key="chart3")
             
             with col2:
-                st.plotly_chart(fig2, width='stretch', key="chart2")
-                st.plotly_chart(fig4, width='stretch', key="chart4")
+                st.plotly_chart(fig2, use_container_width=True, key="chart2")
+                st.plotly_chart(fig4, use_container_width=True, key="chart4")
         else:
             st.error("❌ Error al generar visualizaciones. Verifica los datos.")
         
@@ -1537,13 +1542,13 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
             if 'crime_stats' in analysis and not analysis['crime_stats'].empty:
                 crime_df = analysis['crime_stats'].round(2)
                 crime_df.columns = ['Total Casos', 'Promedio', 'Frecuencia']
-                st.dataframe(crime_df, width='stretch')
+                st.dataframe(crime_df, use_container_width=True)
             
             st.subheader("🏙️ Estadísticas por Ciudad")
             if 'city_stats' in analysis and not analysis['city_stats'].empty:
                 city_df = analysis['city_stats'].round(2)
                 city_df.columns = ['Total Casos', 'Promedio', 'Incidentes']
-                st.dataframe(city_df, width='stretch')
+                st.dataframe(city_df, use_container_width=True)
         
         with tab3:
             st.subheader("📈 Análisis de Tendencias Temporales")
@@ -1619,7 +1624,7 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
         
         # Tabla de datos
         st.markdown("## 📋 TABLA DE DATOS")
-        st.dataframe(df, width='stretch')
+        st.dataframe(df, use_container_width=True)
         
         # Generación de reporte
         st.markdown("## 📄 GENERACIÓN DE INFORME")
