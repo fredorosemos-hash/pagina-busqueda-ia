@@ -1761,6 +1761,20 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
                     st.error(f"❌ Error inesperado al cargar archivo: {str(e)}")
                     st.info("💡 Asegúrate de que el archivo sea un CSV válido con las columnas correctas.")
                     st.info("📋 Formato esperado: delito, ciudad, fecha, cantidad, departamento")
+        
+        # Botón para ir a la página principal
+        st.markdown("---")  # Separador
+        st.markdown("### 🏠 NAVEGACIÓN")
+        
+        # Usar HTML con JavaScript para redirección en la misma pestaña
+        if st.button("🏠 PÁGINA PRINCIPAL", type="primary", use_container_width=True):
+            # Redirección con JavaScript en la misma pestaña
+            js_code = """
+            <script>
+            window.location.href = 'https://proyecto-ia-fiscalia.streamlit.app/';
+            </script>
+            """
+            st.components.v1.html(js_code, height=0)
     
     # Usar datos de la sesión si existen
     if 'data' in st.session_state:
