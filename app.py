@@ -700,65 +700,157 @@ def analyze_data_with_ai(df):
 
 
 def create_visualizations(df):
-    """Crea visualizaciones con Plotly"""
+    """Crea visualizaciones mejoradas con Plotly"""
     if df.empty:
         return None, None, None, None
     
-    # Gráfico 1: Delitos por Ciudad
-    city_crimes = df.groupby('ciudad')['cantidad'].sum().reset_index()
-    fig1 = px.bar(city_crimes, x='ciudad', y='cantidad', 
-                  title='Delitos por Ciudad',
-                  color='cantidad',
-                  color_continuous_scale='Viridis')
+    # Configuración de tema común
+    template = "plotly_dark"
+    color_palette = ['#00ffff', '#ff0080', '#00ff41', '#ff8000', '#8000ff', '#0080ff']
+    
+    # Gráfico 1: Delitos por Ciudad (Mejorado)
+    city_crimes = df.groupby('ciudad')['cantidad'].sum().sort_values(ascending=False)
+    fig1 = px.bar(
+        x=city_crimes.values,
+        y=city_crimes.index,
+        orientation='h',
+        title="🏙️ DELITOS POR CIUDAD",
+        labels={'x': 'Cantidad de Casos', 'y': 'Ciudad'},
+        template=template
+    )
+    fig1.update_traces(
+        marker_color='#00ffff',
+        marker_line_color='#ffffff',
+        marker_line_width=1
+    )
     fig1.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_color='#ffffff',
+        height=500,
+        showlegend=False,
+        font=dict(color='white', size=12),
+        plot_bgcolor='rgba(26,26,46,0.8)',
+        paper_bgcolor='rgba(26,26,46,0.8)',
+        title_font_size=18,
         title_font_color='#00ffff',
-        title_x=0.5
+        title_x=0.5,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     
-    # Gráfico 2: Tendencia Temporal
+    # Gráfico 2: Tendencia Temporal (Mejorado)
     df['fecha'] = pd.to_datetime(df['fecha'])
     temporal = df.groupby('fecha')['cantidad'].sum().reset_index()
-    fig2 = px.line(temporal, x='fecha', y='cantidad',
-                   title='Tendencia Temporal de Delitos',
-                   markers=True)
-    fig2.update_traces(line_color='#00ff41', marker_color='#00ff41')
+    fig2 = px.line(
+        temporal, 
+        x='fecha', 
+        y='cantidad',
+        title="📈 TENDENCIA TEMPORAL DE DELITOS",
+        markers=True,
+        template=template
+    )
+    fig2.update_traces(
+        line_color='#00ff41',
+        line_width=3,
+        marker=dict(size=8, color='#ff0080', line=dict(width=2, color='white'))
+    )
     fig2.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_color='#ffffff',
+        height=400,
+        font=dict(color='white', size=12),
+        plot_bgcolor='rgba(26,26,46,0.8)',
+        paper_bgcolor='rgba(26,26,46,0.8)',
+        title_font_size=18,
         title_font_color='#00ffff',
-        title_x=0.5
+        title_x=0.5,
+        xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+        yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     
-    # Gráfico 3: Tipos de Delitos
-    crime_types = df.groupby('delito')['cantidad'].sum().reset_index()
-    fig3 = px.pie(crime_types, values='cantidad', names='delito',
-                  title='Distribución por Tipo de Delito')
-    fig3.update_traces(textfont_color='#ffffff')
+    # Gráfico 3: Tipos de Delitos (Mejorado)
+    crime_types = df.groupby('delito')['cantidad'].sum().sort_values(ascending=False)
+    fig3 = px.pie(
+        values=crime_types.values,
+        names=crime_types.index,
+        title="📊 DISTRIBUCIÓN POR TIPO DE DELITO",
+        template=template,
+        color_discrete_sequence=color_palette
+    )
+    fig3.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        textfont_size=10,
+        marker=dict(line=dict(color='#ffffff', width=2))
+    )
     fig3.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_color='#ffffff',
+        height=500,
+        font=dict(color='white', size=12),
+        plot_bgcolor='rgba(26,26,46,0.8)',
+        paper_bgcolor='rgba(26,26,46,0.8)',
+        title_font_size=18,
         title_font_color='#00ffff',
-        title_x=0.5
+        title_x=0.5,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     
-    # Gráfico 4: Heatmap Mensual
+    # Gráfico 4: Análisis Year-over-Year o Heatmap (Mejorado)
     df['mes'] = df['fecha'].dt.month
     df['año'] = df['fecha'].dt.year
-    heatmap_data = df.groupby(['año', 'mes'])['cantidad'].sum().unstack(fill_value=0)
-    fig4 = px.imshow(heatmap_data, 
-                     title='Mapa de Calor - Delitos por Mes',
-                     color_continuous_scale='Viridis')
+    
+    yearly_data = df.groupby('año')['cantidad'].sum()
+    
+    if len(yearly_data) > 1:
+        # Gráfico YoY si hay múltiples años
+        growth_rates = []
+        years = list(yearly_data.index)[1:]
+        
+        for i in range(1, len(yearly_data)):
+            prev_val = yearly_data.iloc[i-1]
+            curr_val = yearly_data.iloc[i]
+            growth = ((curr_val - prev_val) / prev_val * 100) if prev_val > 0 else 0
+            growth_rates.append(growth)
+        
+        fig4 = px.bar(
+            x=years,
+            y=growth_rates,
+            title="📊 CRECIMIENTO YEAR-OVER-YEAR (%)",
+            labels={'x': 'Año', 'y': 'Crecimiento (%)'},
+            template=template
+        )
+        
+        # Colorear barras según crecimiento
+        colors = ['#ff0080' if x > 0 else '#00ff41' for x in growth_rates]
+        fig4.update_traces(marker_color=colors, marker_line_color='white', marker_line_width=1)
+        
+    else:
+        # Heatmap si no hay suficientes años
+        heatmap_data = df.groupby(['año', 'mes'])['cantidad'].sum().unstack(fill_value=0)
+        if not heatmap_data.empty:
+            fig4 = px.imshow(
+                heatmap_data.values,
+                x=[f"Mes {i}" for i in heatmap_data.columns],
+                y=[f"Año {i}" for i in heatmap_data.index],
+                title="🔥 MAPA DE CALOR - DELITOS POR MES",
+                color_continuous_scale='plasma',
+                template=template
+            )
+        else:
+            # Fallback: gráfico de barras simple
+            monthly_data = df.groupby('mes')['cantidad'].sum()
+            fig4 = px.bar(
+                x=monthly_data.index,
+                y=monthly_data.values,
+                title="📅 DELITOS POR MES",
+                template=template
+            )
+            fig4.update_traces(marker_color='#00ffff')
+    
     fig4.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_color='#ffffff',
+        height=400,
+        font=dict(color='white', size=12),
+        plot_bgcolor='rgba(26,26,46,0.8)',
+        paper_bgcolor='rgba(26,26,46,0.8)',
+        title_font_size=18,
         title_font_color='#00ffff',
-        title_x=0.5
+        title_x=0.5,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
     
     return fig1, fig2, fig3, fig4
@@ -1222,77 +1314,178 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
     
     # Mostrar contenido principal
     if not df.empty:
+        # Header principal mejorado
+        st.markdown("""
+        <div class="main-header">
+            <div style="text-align: center; padding: 2rem;">
+                <h1 class="main-title">🚨 SISTEMA DE ANÁLISIS CRIMINAL IA</h1>
+                <h2 class="sub-title">Fiscalía General de la Nación - Seccional Medellín</h2>
+                <div style="margin: 1rem 0;">
+                    <span style="color: #00ff41; font-weight: bold;">🤖 POWERED BY ARTIFICIAL INTELLIGENCE</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         # Análisis con IA
         with st.spinner("🤖 Analizando datos con Inteligencia Artificial..."):
             analysis = analyze_data_with_ai(df)
         
-        # Métricas principales
-        st.markdown("## 📊 ESTADÍSTICAS PRINCIPALES")
+        # Métricas principales en diseño mejorado
+        st.markdown("## � DASHBOARD INTELIGENTE")
+        
+        # Crear métricas en columnas con estilo cyberpunk
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric(
-                label="📋 Registros Totales",
-                value=analysis.get('total_records', 0),
-                delta=None
-            )
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, rgba(0,255,255,0.15), rgba(0,255,255,0.05));
+                border: 2px solid #00ffff;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 8px 32px rgba(0,255,255,0.3);
+                backdrop-filter: blur(10px);
+                margin-bottom: 20px;
+            ">
+                <h3 style="color: #00ffff; margin: 0; font-size: 16px; font-family: 'Orbitron', monospace;">📊 TOTAL REGISTROS</h3>
+                <h1 style="color: #ffffff; margin: 10px 0; font-size: 32px; text-shadow: 0 0 10px #00ffff;">{analysis.get('total_records', 0):,}</h1>
+                <p style="color: #b8b8b8; margin: 0; font-size: 12px;">Casos analizados</p>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col2:
-            st.metric(
-                label="🚨 Tipos de Delitos",
-                value=analysis.get('total_crimes', 0),
-                delta=None
-            )
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, rgba(255,0,128,0.15), rgba(255,0,128,0.05));
+                border: 2px solid #ff0080;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 8px 32px rgba(255,0,128,0.3);
+                backdrop-filter: blur(10px);
+                margin-bottom: 20px;
+            ">
+                <h3 style="color: #ff0080; margin: 0; font-size: 16px; font-family: 'Orbitron', monospace;">🏙️ CIUDADES</h3>
+                <h1 style="color: #ffffff; margin: 10px 0; font-size: 32px; text-shadow: 0 0 10px #ff0080;">{analysis.get('total_cities', 0)}</h1>
+                <p style="color: #b8b8b8; margin: 0; font-size: 12px;">Municipios analizados</p>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col3:
-            st.metric(
-                label="🏙️ Ciudades",
-                value=analysis.get('total_cities', 0),
-                delta=None
-            )
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, rgba(0,255,65,0.15), rgba(0,255,65,0.05));
+                border: 2px solid #00ff41;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 8px 32px rgba(0,255,65,0.3);
+                backdrop-filter: blur(10px);
+                margin-bottom: 20px;
+            ">
+                <h3 style="color: #00ff41; margin: 0; font-size: 16px; font-family: 'Orbitron', monospace;">⚖️ TIPOS DELITOS</h3>
+                <h1 style="color: #ffffff; margin: 10px 0; font-size: 32px; text-shadow: 0 0 10px #00ff41;">{analysis.get('total_crimes', 0)}</h1>
+                <p style="color: #b8b8b8; margin: 0; font-size: 12px;">Categorías identificadas</p>
+            </div>
+            """, unsafe_allow_html=True)
         
         with col4:
-            st.metric(
-                label="📈 Total de Casos",
-                value=analysis.get('total_cases', 0),
-                delta=None
-            )
+            trend_color = "#00ff41" if analysis.get('trend_direction') == "decreciente" else "#ff0080"
+            trend_icon = "📉" if analysis.get('trend_direction') == "decreciente" else "📈"
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, rgba(255,128,0,0.15), rgba(255,128,0,0.05));
+                border: 2px solid #ff8000;
+                border-radius: 15px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 8px 32px rgba(255,128,0,0.3);
+                backdrop-filter: blur(10px);
+                margin-bottom: 20px;
+            ">
+                <h3 style="color: #ff8000; margin: 0; font-size: 16px; font-family: 'Orbitron', monospace;">{trend_icon} TENDENCIA</h3>
+                <h1 style="color: {trend_color}; margin: 10px 0; font-size: 24px; text-shadow: 0 0 10px {trend_color};">{analysis.get('trend_direction', 'N/A').upper()}</h1>
+                <p style="color: #b8b8b8; margin: 0; font-size: 12px;">{analysis.get('trend_percentage', 0)}% variación</p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        # Visualizaciones
-        st.markdown("## 📈 VISUALIZACIÓN DE DATOS")
+        # Visualizaciones mejoradas
+        st.markdown("""
+        <div style="margin: 30px 0;">
+            <h2 style="color: #00ffff; font-family: 'Orbitron', monospace; text-align: center; font-size: 24px; text-shadow: 0 0 15px #00ffff;">
+                📈 ANÁLISIS VISUAL INTELIGENTE
+            </h2>
+        </div>
+        """, unsafe_allow_html=True)
         
+        # Crear las visualizaciones
         fig1, fig2, fig3, fig4 = create_visualizations(df)
         
-        col1, col2 = st.columns(2)
-        with col1:
-            st.plotly_chart(fig1, use_container_width=True)
-            st.plotly_chart(fig3, use_container_width=True)
+        if fig1 and fig2 and fig3 and fig4:
+            # Layout en grid 2x2 mejorado
+            col1, col2 = st.columns(2, gap="large")
+            with col1:
+                st.plotly_chart(fig1, width='stretch', key="chart1")
+                st.plotly_chart(fig3, width='stretch', key="chart3")
+            
+            with col2:
+                st.plotly_chart(fig2, width='stretch', key="chart2")
+                st.plotly_chart(fig4, width='stretch', key="chart4")
+        else:
+            st.error("❌ Error al generar visualizaciones. Verifica los datos.")
         
-        with col2:
-            st.plotly_chart(fig2, use_container_width=True)
-            st.plotly_chart(fig4, use_container_width=True)
-        
-        # Insights de IA - Sección Mejorada
-        st.markdown("## 🤖 ANÁLISIS DE INTELIGENCIA ARTIFICIAL")
+        # Insights de IA - Sección mejorada con diseño cyberpunk
+        st.markdown("""
+        <div style="margin: 40px 0;">
+            <h2 style="color: #ff0080; font-family: 'Orbitron', monospace; text-align: center; font-size: 28px; text-shadow: 0 0 20px #ff0080;">
+                🤖 ANÁLISIS DE INTELIGENCIA ARTIFICIAL
+            </h2>
+            <div style="text-align: center; margin: 10px 0;">
+                <span style="color: #00ffff; font-size: 16px;">Sistema Avanzado de Procesamiento Cognitivo</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Crear tabs para organizar mejor la información
-        tab1, tab2, tab3, tab4 = st.tabs(["🎯 Insights Principales", "📊 Análisis Detallado", "📈 Tendencias", "💡 Recomendaciones"])
+        tab1, tab2, tab3, tab4 = st.tabs(["🎯 INSIGHTS PRINCIPALES", "📊 ANÁLISIS DETALLADO", "📈 TENDENCIAS", "💡 RECOMENDACIONES"])
 
         with tab1:
             col1, col2 = st.columns(2)
             
             with col1:
                 st.markdown(f"""
-                <div class="success-message">
-                    <h4>🚨 DELITOS PRINCIPALES</h4>
-                    <ul>
+                <div style="
+                    background: linear-gradient(135deg, rgba(255,0,128,0.1), rgba(255,0,128,0.05));
+                    border: 2px solid #ff0080;
+                    border-radius: 15px;
+                    padding: 25px;
+                    box-shadow: 0 8px 32px rgba(255,0,128,0.2);
+                    backdrop-filter: blur(10px);
+                    margin: 10px 0;
+                ">
+                    <h4 style="color: #ff0080; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">🚨 DELITOS PRINCIPALES</h4>
+                    <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
                         <li><strong>Más frecuente:</strong> {analysis.get('most_frequent_crime', 'N/A')}</li>
                         <li><strong>Mayor promedio:</strong> {analysis.get('highest_avg_crime', 'N/A')}</li>
                         <li><strong>Tipos únicos:</strong> {analysis.get('total_crimes', 0)} diferentes</li>
                     </ul>
-                    
-                    <h4>🏙️ ANÁLISIS GEOGRÁFICO</h4>
-                    <ul>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(135deg, rgba(0,255,65,0.1), rgba(0,255,65,0.05));
+                    border: 2px solid #00ff41;
+                    border-radius: 15px;
+                    padding: 25px;
+                    box-shadow: 0 8px 32px rgba(0,255,65,0.2);
+                    backdrop-filter: blur(10px);
+                    margin: 10px 0;
+                ">
+                    <h4 style="color: #00ff41; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">🏙️ ANÁLISIS TERRITORIAL</h4>
+                    <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
                         <li><strong>Ciudad más afectada:</strong> {analysis.get('most_affected_city', 'N/A')}</li>
                         <li><strong>Mayor tasa promedio:</strong> {analysis.get('highest_crime_rate_city', 'N/A')}</li>
                         <li><strong>Mayor diversidad:</strong> {analysis.get('high_diversity_city', 'N/A')} ({analysis.get('max_diversity', 0)} tipos)</li>
@@ -1302,16 +1495,36 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
             
             with col2:
                 st.markdown(f"""
-                <div class="success-message">
-                    <h4>📅 PATRONES TEMPORALES</h4>
-                    <ul>
+                <div style="
+                    background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(0,255,255,0.05));
+                    border: 2px solid #00ffff;
+                    border-radius: 15px;
+                    padding: 25px;
+                    box-shadow: 0 8px 32px rgba(0,255,255,0.2);
+                    backdrop-filter: blur(10px);
+                    margin: 10px 0;
+                ">
+                    <h4 style="color: #00ffff; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">� PATRONES TEMPORALES</h4>
+                    <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
                         <li><strong>Tendencia:</strong> {analysis.get('trend_direction', 'N/A')} ({analysis.get('trend_percentage', 0)}%)</li>
                         <li><strong>Día más peligroso:</strong> {analysis.get('most_dangerous_day', 'N/A')}</li>
                         <li><strong>Patrón estacional:</strong> {analysis.get('seasonal_pattern', 'N/A')}</li>
                     </ul>
-                    
-                    <h4>🔍 INSIGHT AVANZADO</h4>
-                    <ul>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(135deg, rgba(255,128,0,0.1), rgba(255,128,0,0.05));
+                    border: 2px solid #ff8000;
+                    border-radius: 15px;
+                    padding: 25px;
+                    box-shadow: 0 8px 32px rgba(255,128,0,0.2);
+                    backdrop-filter: blur(10px);
+                    margin: 10px 0;
+                ">
+                    <h4 style="color: #ff8000; margin: 0 0 15px 0; font-family: 'Orbitron', monospace;">� MÉTRICAS CLAVE</h4>
+                    <ul style="color: #ffffff; margin: 0; padding-left: 20px;">
                         <li><strong>Correlación:</strong> {analysis.get('correlation_insight', 'N/A')}</li>
                         <li><strong>Total casos:</strong> {analysis.get('total_cases', 0):,}</li>
                         <li><strong>Registros:</strong> {analysis.get('total_records', 0):,}</li>
@@ -1324,13 +1537,13 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
             if 'crime_stats' in analysis and not analysis['crime_stats'].empty:
                 crime_df = analysis['crime_stats'].round(2)
                 crime_df.columns = ['Total Casos', 'Promedio', 'Frecuencia']
-                st.dataframe(crime_df, use_container_width=True)
+                st.dataframe(crime_df, width='stretch')
             
             st.subheader("🏙️ Estadísticas por Ciudad")
             if 'city_stats' in analysis and not analysis['city_stats'].empty:
                 city_df = analysis['city_stats'].round(2)
                 city_df.columns = ['Total Casos', 'Promedio', 'Incidentes']
-                st.dataframe(city_df, use_container_width=True)
+                st.dataframe(city_df, width='stretch')
         
         with tab3:
             st.subheader("📈 Análisis de Tendencias Temporales")
@@ -1406,7 +1619,7 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
         
         # Tabla de datos
         st.markdown("## 📋 TABLA DE DATOS")
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width='stretch')
         
         # Generación de reporte
         st.markdown("## 📄 GENERACIÓN DE INFORME")
