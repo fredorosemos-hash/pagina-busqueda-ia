@@ -1106,23 +1106,6 @@ def generate_word_report(df, analysis):
 # ===================================
 
 def main():
-    # Selector de modo de interfaz
-    with st.sidebar:
-        st.markdown("## 🎨 Modo de interfaz")
-        ui_mode = st.radio(
-            "Elige cómo ver la aplicación:",
-            ["Diseño original (HTML)", "Modo Streamlit"],
-            index=1,
-            help="Puedes volver al diseño HTML inicial sin perder las funciones nuevas."
-        )
-
-    # Si el usuario quiere el diseño original, lo renderizamos y terminamos
-    if ui_mode == "Diseño original (HTML)":
-        html = build_original_html()
-        # Altura grande para permitir scroll del HTML original
-        components.html(html, height=2000, scrolling=True)
-        return
-
     # Header principal con diseño original
     st.markdown("""
     <div class="main-header">
@@ -1141,28 +1124,22 @@ def main():
     
     # Sidebar
     with st.sidebar:
-        st.markdown("## 🔧 PANEL DE CONTROL")
-        
-        # Opción de carga de datos
-        data_option = st.radio(
-            "Selecciona la fuente de datos:",
-            ["📊 Datos de Ejemplo", "📁 Cargar Archivo CSV"]
-        )
+        st.markdown("## � CARGA DE DATOS")
         
         # Inicializar datos
         df = pd.DataFrame()
         
-        if data_option == "📊 Datos de Ejemplo":
-            if st.button("🧪 CARGAR DATOS DE PRUEBA"):
-                df = load_sample_data()
-                st.success("✅ Datos de ejemplo cargados correctamente!")
-                st.session_state['data'] = df
-        
-        elif data_option == "📁 Cargar Archivo CSV":
-            # Mostrar información de ayuda
-            with st.expander("❓ ¿Qué formato debe tener mi archivo CSV?"):
-                st.markdown("""
-                **📋 Columnas requeridas:**
+        # Mostrar información de ayuda
+        with st.expander("❓ ¿Qué formato debe tener mi archivo CSV?"):
+            st.markdown("""
+            **📋 Columnas requeridas:**
+            - `delito`: Tipo de delito (texto)
+            - `ciudad`: Ciudad donde ocurrió (texto)
+            - `fecha`: Fecha del incidente (formato: AAAA-MM-DD)
+            - `cantidad`: Número de casos (número entero)
+            - `departamento`: Departamento (texto)
+            
+            **� Ejemplo de archivo CSV válido:**
                 - `delito`: Tipo de delito (texto)
                 - `ciudad`: Ciudad donde ocurrió (texto)
                 - `fecha`: Fecha del incidente (formato: AAAA-MM-DD)
@@ -1666,11 +1643,16 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
         st.markdown("""
         <div style="text-align: center; padding: 3rem;">
             <h2>🚀 BIENVENIDO AL SISTEMA DE ANÁLISIS</h2>
-            <p>Para comenzar, selecciona una opción en el panel lateral:</p>
-            <ul style="text-align: left; max-width: 400px; margin: 0 auto;">
-                <li>🧪 Cargar datos de ejemplo para una demostración</li>
-                <li>📁 Subir tu propio archivo CSV</li>
-            </ul>
+            <p>Para comenzar, carga tu archivo CSV usando el panel lateral:</p>
+            <div style="text-align: left; max-width: 500px; margin: 1rem auto; padding: 2rem; background: rgba(0,255,255,0.1); border: 2px solid #00ffff; border-radius: 15px;">
+                <h3 style="color: #00ffff; margin-bottom: 1rem;">📁 INSTRUCCIONES DE CARGA</h3>
+                <ul style="color: #ffffff;">
+                    <li>✅ Usa el botón "Selecciona tu archivo CSV" en el panel lateral</li>
+                    <li>✅ Asegúrate que tu archivo tenga las columnas requeridas</li>
+                    <li>✅ Descarga la plantilla CSV si necesitas un ejemplo</li>
+                    <li>✅ Una vez cargado, el sistema procesará automáticamente tus datos</li>
+                </ul>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
