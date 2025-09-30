@@ -1596,7 +1596,7 @@ def main():
     
     # Sidebar
     with st.sidebar:
-        st.markdown("## � CARGA DE DATOS")
+        st.markdown("## 📁 CARGA DE DATOS")
         
         # Inicializar datos
         df = pd.DataFrame()
@@ -1798,7 +1798,7 @@ Extorsión,Itagüí,2024-01-15,8,Antioquia"""
             analysis = analyze_data_with_ai(df)
         
         # Métricas principales en diseño mejorado
-        st.markdown("## � DASHBOARD INTELIGENTE")
+        st.markdown("## 🧠 DASHBOARD INTELIGENTE")
         
         # Crear métricas en columnas con estilo cyberpunk
         col1, col2, col3, col4 = st.columns(4)
